@@ -23,7 +23,7 @@ namespace Impostor.Plugins.ImpostorCord.Handlers
             foreach (var player in e.Game.Players)
             {
                 if(player.Character.PlayerInfo.IsDead){
-                    Bot.games[e.Game.Code.Code].players[player.Character.PlayerInfo.ColorId].isDead = true;
+                    Bot.games[e.Game.Code.Code].players[(int)player.Character.PlayerInfo.Color].isDead = true;
                 }
             }
             await Bot.Meeting(e.Game.Code.Code);
@@ -63,7 +63,7 @@ namespace Impostor.Plugins.ImpostorCord.Handlers
         }
         [EventListener]
         public void OnPlayerExhiled(IPlayerExileEvent e){
-            Bot.games[e.Game.Code.Code].players[e.PlayerControl.PlayerInfo.ColorId].isDead = true;
+            Bot.games[e.Game.Code.Code].players[(int)e.PlayerControl.PlayerInfo.Color].isDead = true;
         }
 
     }
