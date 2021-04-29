@@ -304,7 +304,8 @@ namespace Impostor.Plugins.ImpostorCord.Discord
             int i = 0;
             foreach(string color in Bot.InGameColors){
                 foreach(DiscordEmoji emoji in guild.Emojis.Values){
-                    if(emoji.Name == color){
+                    string emojiName = Bot.config.emojiPrefix + color + Bot.config.emojiSuffix;
+                    if(emoji.Name == emojiName){
                         Bot.EmojiList.SetValue(emoji, i);
                         break;
                     }

@@ -8,5 +8,8 @@
     
     "extraSecondsOfTalkAfterMeeting": 10,
     "deadСanTalkDuringTasks": true,
-    "removeCommands" : false
+    "removeCommands" : false,
+
+    "emojiPrefix": "",
+    "emojiSuffix": ""
 }

@@ -59,5 +59,10 @@ namespace Impostor.Plugins.ImpostorCord
         [JsonPropertyName("removeCommands")]
         public bool removeCommands { get; set; }
 
+        [JsonPropertyName("emojiPrefix")]
+        public string emojiPrefix { get; set; }
+        [JsonPropertyName("emojiSuffix")]
+        public string emojiSuffix { get; set; }
+
     }
 }
