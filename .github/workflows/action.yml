@@ -1,0 +1,70 @@
+name: release
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - 'v*'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+
+            - uses: actions/checkout@v2
+            - uses: actions/setup-dotnet@v1
+              with:
+                  dotnet-version: '5.0.202'
+
+            - run: |
+                dotnet restore -nologo
+                dotnet publish -nologo -c Release -p:DebugType=none
+
+            - name: 'set ver info'
+              run: |
+                  echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+                  echo "ZIP_NAME=${{ github.event.repository.name }}-${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+            - name: Get commit summary
+              id: get_commit_summary
+              run: |
+                  PREVIOUS_TAG=$(git tag --sort=-creatordate | sed -n 2p)
+                  echo "PREVIOUS_TAG: $PREVIOUS_TAG"
+                  COMMIT_SUMMARY="$(git log --oneline --pretty=tformat:"%h %s" $PREVIOUS_TAG..${{ github.ref }})"
+                  COMMIT_SUMMARY="${COMMIT_SUMMARY//$'\n'/'%0A'}"
+                  echo "COMMIT_SUMMARY=$COMMIT_SUMMARY" >> $GITHUB_ENV
+
+            - name: archive
+              run: |
+                cd bin/Release/net5.0/publish
+                mkdir plugins libraries
+                rm -f *.xml
+                mv ImpostorCord.dll plugins
+                mv *.dll libraries
+                zip $ZIP_NAME
+                mv $ZIP_NAME ../../../../
+
+            - name: create release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release ${{ github.ref }}
+                  draft: false
+                  prerelease: false
+                  body: |
+                      $COMMIT_SUMMARY
+
+            - name: upload release
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./$ZIP_NAME
+                  asset_name: $ZIP_NAME
+                  asset_content_type: application/zip
+

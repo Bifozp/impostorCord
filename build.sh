@@ -2,8 +2,8 @@
 dotnet restore
 if [[ $1 == "release" ]]; then
     rm -r bin/Release/net5.0/publish
-    dotnet build -c Release
-    dotnet publish -c Release
+    dotnet build -c Release -p:DebugType=none
+    dotnet publish -c Release -p:DebugType=none
     cd bin/Release/net5.0/publish
 else
     rm -r bin/Debug/net5.0/publish
